@@ -3,7 +3,7 @@ from src.kraken_api import KrakenMockAPI
 import time
 
 
-def main():
+def main(kafka_broker_address: str, kafka_topic: str):
     """
     It does 2 things:
     1. Reads trades from the Kraken API.
@@ -17,6 +17,8 @@ def main():
     """
 
     logger.info("Starting the trades service")
+    print(f"Kafka broker address: {kafka_broker_address}")
+    print(f"Kafka topic: {kafka_topic}")
     
     kraken_api = KrakenMockAPI(pair="BTC/USD")
 
@@ -31,4 +33,9 @@ def main():
         time.sleep(1)
 
 if __name__ == "__main__":
-    main()
+    from config import config
+    
+    main(
+        kafka_broker_address=config.kafka_broker_address,
+        kafka_topic=config.kafka_topic
+    )
