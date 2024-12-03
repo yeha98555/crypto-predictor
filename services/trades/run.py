@@ -1,6 +1,6 @@
 from loguru import logger
 from src.kraken_api import KrakenMockAPI
-import time
+from quixstreams import Application
 
 
 def main(kafka_broker_address: str, kafka_topic: str):
@@ -21,17 +21,28 @@ def main(kafka_broker_address: str, kafka_topic: str):
     print(f"Kafka broker address: {kafka_broker_address}")
     print(f"Kafka topic: {kafka_topic}")
     
+    # Mock the Kraken API
     kraken_api = KrakenMockAPI(pair="BTC/USD")
 
-    while True: 
-        trades = kraken_api.get_trades()
+    # Initialize the QuixStreams application
+    # This class handles all the low-level details of connecting to Kafka
+    app = Application(broker_address=kafka_broker_address)
+    
+    # Define a topic where we will push the trades
+    topic = app.topic(name=kafka_topic, value_serializer="json")
 
-        for trade in trades:
-            # TODO: Push to a Kafka topic
+    with app.get_producer() as producer:
+        while True: 
+            trades = kraken_api.get_trades()
 
-            logger.info(f"Pushed trade to Kafka: {trade}")
-        
-        time.sleep(1)
+            for trade in trades:
+                # Serialize the trade as bytes
+                message = topic.serialize(key=trade.pair, value=trade.to_dict())
+                # Push the serialized message to Kafka
+                producer.produce(topic=topic.name, value=message.value, key=message.key)
+
+                logger.info(f"Pushed trade to Kafka: {trade}")
+
 
 if __name__ == "__main__":
     from config import config

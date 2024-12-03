@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from typing import List
+import time
 
 
 class Trade(BaseModel):
@@ -22,6 +23,9 @@ class Trade(BaseModel):
     timestamp: datetime
     timestamp_ms: int
 
+    def to_dict(self) -> dict:
+        return self.model_dump_json()
+
 class KrakenMockAPI:
     def __init__(self, pair: str):
         self.pair = pair
@@ -31,4 +35,7 @@ class KrakenMockAPI:
             Trade(pair=self.pair, price=0.5147, volume=1136.19677815, timestamp=datetime(2023, 9, 25, 7, 49, 36, 925603), timestamp_ms=1727232576925603),
             Trade(pair=self.pair, price=0.5347, volume=1136.19677815, timestamp=datetime(2023, 9, 25, 7, 49, 36, 925605), timestamp_ms=1727232576925603),
         ]
+
+        time.sleep(1)
+
         return mock_trades
