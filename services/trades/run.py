@@ -10,7 +10,8 @@ def main(kafka_broker_address: str, kafka_topic: str):
     2. Push them to a Kafka topic.
 
     Args:
-        None
+        kafka_broker_address (str): The address of the Kafka broker.
+        kafka_topic (str): The topic to push the trades to.
 
     Returns:
         None
