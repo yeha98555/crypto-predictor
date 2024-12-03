@@ -4,6 +4,8 @@
 - Ubuntu 22.04
 - Make 4.3
 - Python 3.10
+- Docker 26.1.4
+- Docker Compose 2.25.1
 
 ## Setup
 Take `trades` microservice as an example in Usage section.
@@ -47,6 +49,17 @@ Write a Makefile in the project.
 cd services/trades
 make [target]
 # e.g. make run
+```
+
+### Redpanda
+[Redpanda](https://docs.redpanda.com/latest/): a fast, reliable, and cost-effective Kafka®-compatible event streaming platform.
+
+#### Install
+Use docker compose file in `docker-compose/redpanda.yml`.
+And run the following command.
+```sh
+cd docker-compose
+docker compose -f redpanda.yml up -d
 ```
 
 
