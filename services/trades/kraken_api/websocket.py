@@ -27,6 +27,10 @@ class KrakenWebsocketAPI:
             List[Trade]: A list of Trade objects.
         """
         data = self._ws_client.recv()
+        
+        if 'heartbeat' in data:
+            logger.info("Heartbeat received")
+            return []
 
         # Transform raw data into a JSON object
         try:
