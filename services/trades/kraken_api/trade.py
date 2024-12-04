@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from datetime import datetime
+from pydantic import BaseModel, computed_field
+
 
 class Trade(BaseModel):
     """
@@ -17,7 +18,11 @@ class Trade(BaseModel):
     price: float
     volume: float
     timestamp: datetime
-    timestamp_ms: int
+
+    @computed_field
+    def timestamp_ms(self) -> int:
+        """Compute timestamp in milliseconds."""
+        return int(self.timestamp.timestamp() * 1000)
 
     def to_dict(self) -> dict:
         return self.model_dump_json()
