@@ -55,7 +55,7 @@ make [target]
 [Redpanda](https://docs.redpanda.com/latest/): a fast, reliable, and cost-effective Kafka®-compatible event streaming platform.
 
 #### Usage
-Use docker compose file in `docker-compose/redpanda.yml`.
+Use the docker compose file in `docker-compose/redpanda.yml`.
 And run the following command.
 ```sh
 cd docker-compose

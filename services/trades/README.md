@@ -1,4 +1,4 @@
 ## Trades
 
-It ingest trades from the Kraken API and pushed them to a Kafka topic.
+It ingests trades from the Kraken API and pushes them to a Kafka topic.
 
