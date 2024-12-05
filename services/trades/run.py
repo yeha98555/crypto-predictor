@@ -40,10 +40,15 @@ def main(
             trades = kraken_api.get_trades()
 
             for trade in trades:
-                # Serialize the trade as bytes
-                message = topic.serialize(key=trade.pair, value=trade.to_dict())
-                # Push the serialized message to Kafka
-                producer.produce(topic=topic.name, value=message.value, key=message.key)
+                try:
+                    # Serialize the trade as bytes
+                    message = topic.serialize(key=trade.pair, value=trade.to_dict())
+                    # Push the serialized message to Kafka
+                    producer.produce(
+                        topic=topic.name, value=message.value, key=message.key
+                    )
+                except Exception as e:
+                    logger.error(f'Failed to produce message to Redpanda: {e}')
 
                 logger.info(f'Pushed trade to Kafka: {trade}')
 
