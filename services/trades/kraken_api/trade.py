@@ -1,11 +1,12 @@
 from datetime import datetime
+
 from pydantic import BaseModel, computed_field
 
 
 class Trade(BaseModel):
     """
     A trade from the Kraken API.
-    
+
     "symbol": "MATIC/USD",
     "side": "buy",
     "price": 0.5147,
@@ -14,6 +15,7 @@ class Trade(BaseModel):
     "trade_id": 4665847,
     "timestamp": "2023-09-25T07:49:36.925603Z"
     """
+
     pair: str  # symbol
     price: float
     volume: float

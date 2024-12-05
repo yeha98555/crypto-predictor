@@ -1,16 +1,16 @@
 from typing import Union
-from loguru import logger
-from quixstreams import Application
 
 from kraken_api.mock import KrakenMockAPI
 from kraken_api.websocket import KrakenWebsocketAPI
+from loguru import logger
+from quixstreams import Application
 
 
 def main(
-        kafka_broker_address: str,
-        kafka_topic: str,
-        kraken_api: Union[KrakenMockAPI, KrakenWebsocketAPI]
-    ):
+    kafka_broker_address: str,
+    kafka_topic: str,
+    kraken_api: Union[KrakenMockAPI, KrakenWebsocketAPI],
+):
     """
     It does 2 things:
     1. Reads trades from the Kraken API.
@@ -24,19 +24,19 @@ def main(
         None
     """
 
-    logger.info("Starting the trades service")
-    print(f"Kafka broker address: {kafka_broker_address}")
-    print(f"Kafka topic: {kafka_topic}")
+    logger.info('Starting the trades service')
+    print(f'Kafka broker address: {kafka_broker_address}')
+    print(f'Kafka topic: {kafka_topic}')
 
     # Initialize the QuixStreams application
     # This class handles all the low-level details of connecting to Kafka
     app = Application(broker_address=kafka_broker_address)
-    
+
     # Define a topic where we will push the trades
-    topic = app.topic(name=kafka_topic, value_serializer="json")
+    topic = app.topic(name=kafka_topic, value_serializer='json')
 
     with app.get_producer() as producer:
-        while True: 
+        while True:
             trades = kraken_api.get_trades()
 
             for trade in trades:
@@ -45,18 +45,18 @@ def main(
                 # Push the serialized message to Kafka
                 producer.produce(topic=topic.name, value=message.value, key=message.key)
 
-                logger.info(f"Pushed trade to Kafka: {trade}")
+                logger.info(f'Pushed trade to Kafka: {trade}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     from config import config
 
     # Initialize the Kraken API
     kraken_api = KrakenWebsocketAPI(pairs=config.pairs)
     # kraken_api = KrakenMockAPI(pair=config.pairs[0])  # Mock API for testing
-    
+
     main(
         kafka_broker_address=config.kafka_broker_address,
         kafka_topic=config.kafka_topic,
-        kraken_api=kraken_api
+        kraken_api=kraken_api,
     )

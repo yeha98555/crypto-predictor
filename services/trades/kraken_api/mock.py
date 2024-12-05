@@ -1,7 +1,8 @@
 # Mock the Kraken API
+import time
 from datetime import datetime
 from typing import List
-import time
+
 from .trade import Trade
 
 
@@ -11,8 +12,18 @@ class KrakenMockAPI:
 
     def get_trades(self) -> List[Trade]:
         mock_trades = [
-            Trade(pair=self.pair, price=0.5147, volume=1136.19677815, timestamp=datetime(2023, 9, 25, 7, 49, 36, 925603)),
-            Trade(pair=self.pair, price=0.5347, volume=1136.19677815, timestamp=datetime(2023, 9, 25, 7, 49, 36, 925605)),
+            Trade(
+                pair=self.pair,
+                price=0.5147,
+                volume=1136.19677815,
+                timestamp=datetime(2023, 9, 25, 7, 49, 36, 925603),
+            ),
+            Trade(
+                pair=self.pair,
+                price=0.5347,
+                volume=1136.19677815,
+                timestamp=datetime(2023, 9, 25, 7, 49, 36, 925605),
+            ),
         ]
 
         time.sleep(1)

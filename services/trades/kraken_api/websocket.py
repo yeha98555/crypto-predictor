@@ -1,5 +1,6 @@
 import json
 from typing import List
+
 from loguru import logger
 from websocket import create_connection
 
@@ -8,7 +9,7 @@ from .trade import Trade
 
 class KrakenWebsocketAPI:
     # Websocket URL
-    URL = "wss://ws.kraken.com/v2"
+    URL = 'wss://ws.kraken.com/v2'
 
     def __init__(self, pairs: List[str]):
         self.pairs = pairs
@@ -27,9 +28,9 @@ class KrakenWebsocketAPI:
             List[Trade]: A list of Trade objects.
         """
         data = self._ws_client.recv()
-        
+
         if 'heartbeat' in data:
-            logger.info("Heartbeat received")
+            logger.info('Heartbeat received')
             return []
 
         # Transform raw data
@@ -42,11 +43,12 @@ class KrakenWebsocketAPI:
                     pair=trade['symbol'],
                     price=trade['price'],
                     volume=trade['qty'],
-                    timestamp=trade['timestamp']
-                ) for trade in trades_data
+                    timestamp=trade['timestamp'],
+                )
+                for trade in trades_data
             ]
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to decode JSON: {e}")
+            logger.error(f'Failed to decode JSON: {e}')
             return []
         except KeyError:
             logger.error(f"No 'data' field with trades in the message: {parsed_data}")
@@ -54,14 +56,18 @@ class KrakenWebsocketAPI:
 
     def _subscribe(self):
         # Send a subscribe message to the websocket
-        self._ws_client.send(json.dumps({
-            "method": "subscribe",
-            "params": {
-                "channel": "trade",
-                "symbol": self.pairs,
-                "snapshot": True
-            }
-        }))
+        self._ws_client.send(
+            json.dumps(
+                {
+                    'method': 'subscribe',
+                    'params': {
+                        'channel': 'trade',
+                        'symbol': self.pairs,
+                        'snapshot': True,
+                    },
+                }
+            )
+        )
 
         # Skip initial messages for each pair
         for _ in self.pairs:
