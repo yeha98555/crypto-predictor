@@ -32,30 +32,25 @@ class KrakenWebsocketAPI:
             logger.info("Heartbeat received")
             return []
 
-        # Transform raw data into a JSON object
+        # Transform raw data
         try:
-            data = json.loads(data)
+            parsed_data = json.loads(data)
+            trades_data = parsed_data['data']
+
+            return [
+                Trade(
+                    pair=trade['symbol'],
+                    price=trade['price'],
+                    volume=trade['qty'],
+                    timestamp=trade['timestamp']
+                ) for trade in trades_data
+            ]
         except json.JSONDecodeError as e:
             logger.error(f"Failed to decode JSON: {e}")
             return []
-
-        # Extract the trades data
-        try:
-            trades_data = data['data']
         except KeyError:
-            logger.error(f"No 'data' field with trades in the message: {data}")
+            logger.error(f"No 'data' field with trades in the message: {parsed_data}")
             return []
-
-        trades = [
-            Trade(
-                pair=trade['symbol'],
-                price=trade['price'],
-                volume=trade['qty'],
-                timestamp=trade['timestamp']
-            ) for trade in trades_data
-        ]
-
-        return trades
 
     def _subscribe(self):
         # Send a subscribe message to the websocket
@@ -68,7 +63,7 @@ class KrakenWebsocketAPI:
             }
         }))
 
-        # Skip the initial messages
-        for pair in self.pairs:
-            _ = self._ws_client.recv()
-            _ = self._ws_client.recv()
+        # Skip initial messages for each pair
+        for _ in self.pairs:
+            _ = self._ws_client.recv()  # Subscription status
+            _ = self._ws_client.recv()  # Initial snapshot
