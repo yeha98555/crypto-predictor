@@ -16,3 +16,4 @@ lint:
 # Run ruff formatter
 format:
 	uv run ruff check --fix .
+	uv run ruff format
