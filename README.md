@@ -62,6 +62,27 @@ cd docker-compose
 docker compose -f redpanda.yml up -d
 ```
 
+### Pre-commit
+[Pre-commit](https://pre-commit.com/): a framework for managing and maintaining multi-language pre-commit hooks.
+
+#### Install
+```sh
+uv tool install ruff  # use ruff as the linter and formatter in pre-commit
+uv tool install pre-commit
+```
+#### Usage
+Install the git hooks scripts.
+```sh
+pre-commit install
+# Ouput:
+# pre-commit installed at .git/hooks/pre-commit
+```
+Then every time you commit, the hooks will be run automatically.
+
+Or you can run against all the files manually, run the following command.
+```sh
+pre-commit run --all-files
+```
 
 ## Steps
 
