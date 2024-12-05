@@ -1,9 +1,16 @@
+import signal
+import sys
 from typing import Union
 
 from kraken_api.mock import KrakenMockAPI
 from kraken_api.websocket import KrakenWebsocketAPI
 from loguru import logger
 from quixstreams import Application
+
+
+def signal_handler(sig, frame):
+    logger.info('Received shutdown signal. Exiting gracefully...')
+    sys.exit(0)
 
 
 def main(
@@ -34,6 +41,10 @@ def main(
 
     # Define a topic where we will push the trades
     topic = app.topic(name=kafka_topic, value_serializer='json')
+
+    # Register the signal handler for graceful shutdown
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
     with app.get_producer() as producer:
         while True:
