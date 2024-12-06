@@ -19,12 +19,16 @@ class Trade(BaseModel):
     pair: str  # symbol
     price: float
     volume: float
-    timestamp: datetime
+    timestamp: str
 
     @computed_field
     def timestamp_ms(self) -> int:
         """Compute timestamp in milliseconds."""
-        return int(self.timestamp.timestamp() * 1000)
+        # Parse ISO 8601 timestamp
+        dt = datetime.fromisoformat(self.timestamp.replace('Z', '+00:00'))
+        # Compute timestamp in milliseconds
+        timestamp_ms = int(dt.timestamp() * 1000)
+        return timestamp_ms
 
     def to_dict(self) -> dict:
-        return self.model_dump_json()
+        return self.model_dump()
