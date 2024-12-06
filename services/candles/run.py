@@ -48,6 +48,7 @@ def main(
     kafka_output_topic: str,
     kafka_consumer_group: str,
     candle_seconds: int,
+    emit_incomplete_candles: bool,
 ):
     """
     3 steps:
@@ -61,6 +62,7 @@ def main(
         kafka_output_topic (str): Kafka output topic
         kafka_consumer_group (str): Kafka consumer group
         candle_seconds (int): Candle seconds
+        emit_incomplete_candles (bool): Emit incomplete candles or just the final one
 
     Returns:
         None
@@ -71,7 +73,7 @@ def main(
     logger.info(f'Kafka output topic: {kafka_output_topic}')
     logger.info(f'Kafka consumer group: {kafka_consumer_group}')
     logger.info(f'Candle seconds: {candle_seconds}')
-
+    logger.info(f'Emit incomplete candles: {emit_incomplete_candles}')
     # Initialize the QuixStreams application
     app = Application(
         broker_address=kafka_broker_address, consumer_group=kafka_consumer_group
@@ -96,11 +98,12 @@ def main(
         .reduce(reducer=update_candle, initializer=init_candle)
     )
 
-    # Emit all intermediate candles to make the system more responsive
-    sdf = sdf.current()
-
-    # If you wanted to emit the final candle only, you could do this:
-    # sdf = sdf.final()
+    if emit_incomplete_candles:
+        # Emit all intermediate candles to make the system more responsive
+        sdf = sdf.current()
+    else:
+        # Emit the final candle only
+        sdf = sdf.final()
 
     # Extract the values from the dataframe
     sdf['open'] = sdf['value']['open']
@@ -151,4 +154,5 @@ if __name__ == '__main__':
         kafka_output_topic=config.kafka_output_topic,
         kafka_consumer_group=config.kafka_consumer_group,
         candle_seconds=config.candle_seconds,
+        emit_incomplete_candles=config.emit_incomplete_candles,
     )
