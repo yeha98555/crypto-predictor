@@ -88,13 +88,12 @@ def main(
     # Create a Streaming Dataframe
     sdf = app.dataframe(topic=input_topic)
 
-    # Define a tumbling window of 60 seconds
-    sdf = sdf.tumbling_window(timedelta(seconds=candle_seconds))
-
-    # Apply the reducer to update the candle, or initialize it with the first trade
-    sdf = sdf.reduce(
-        reducer=update_candle,
-        initializer=init_candle,
+    # Aggregation of trades into candles using tumbling windows
+    sdf = (
+        # Define a tumbling window of 60 seconds
+        sdf.tumbling_window(timedelta(seconds=candle_seconds))
+        # Apply the reducer to update the candle, or initialize it with the first trade
+        .reduce(reducer=update_candle, initializer=init_candle)
     )
 
     # Emit all intermediate candles to make the system more responsive
@@ -103,6 +102,7 @@ def main(
     # If you wanted to emit the final candle only, you could do this:
     # sdf = sdf.final()
 
+    # Extract the values from the dataframe
     sdf['open'] = sdf['value']['open']
     sdf['high'] = sdf['value']['high']
     sdf['low'] = sdf['value']['low']
@@ -110,7 +110,7 @@ def main(
     sdf['volume'] = sdf['value']['volume']
     sdf['timestamp_ms'] = sdf['value']['timestamp_ms']
     sdf['pair'] = sdf['value']['pair']
-
+    # Extract the window start and end timestamps
     sdf['window_start_ms'] = sdf['start']
     sdf['window_end_ms'] = sdf['end']
 
@@ -131,6 +131,8 @@ def main(
 
     # For debugging
     # sdf = sdf.update(lambda value: breakpoint())
+
+    # sdf = sdf.print()
     sdf = sdf.apply(lambda x: logger.info(f'Candle: {x}'))
 
     # Push the candles to the output topic
