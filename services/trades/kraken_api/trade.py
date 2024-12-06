@@ -24,11 +24,8 @@ class Trade(BaseModel):
     @computed_field
     def timestamp_ms(self) -> int:
         """Compute timestamp in milliseconds."""
-        # Parse ISO 8601 timestamp
         dt = datetime.fromisoformat(self.timestamp.replace('Z', '+00:00'))
-        # Compute timestamp in milliseconds
-        timestamp_ms = int(dt.timestamp() * 1000)
-        return timestamp_ms
+        return int(dt.timestamp() * 1000)
 
     def to_dict(self) -> dict:
         return self.model_dump()
