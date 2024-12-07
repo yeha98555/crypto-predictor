@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, Field, computed_field
 
 
 class Trade(BaseModel):
@@ -19,12 +19,16 @@ class Trade(BaseModel):
     pair: str  # symbol
     price: float
     volume: float
-    timestamp: datetime
+    timestamp: str = Field(
+        ...,
+        pattern=r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$',
+    )
 
     @computed_field
     def timestamp_ms(self) -> int:
         """Compute timestamp in milliseconds."""
-        return int(self.timestamp.timestamp() * 1000)
+        dt = datetime.fromisoformat(self.timestamp.replace('Z', '+00:00'))
+        return int(dt.timestamp() * 1000)
 
     def to_dict(self) -> dict:
-        return self.model_dump_json()
+        return self.model_dump()
