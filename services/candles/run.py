@@ -32,10 +32,9 @@ def init_candle(trade: Dict[str, Any]) -> Dict[str, Any]:
 
 def update_candle(acc: Dict[str, Any], trade: Dict[str, Any]) -> Dict[str, Any]:
     return {
-        'open': trade['price'],
+        'close': trade['price'],
         'high': max(acc['high'], trade['price']),
         'low': min(acc['low'], trade['price']),
-        'close': trade['price'],
         'volume': acc['volume'] + trade['volume'],
         'timestamp_ms': trade['timestamp_ms'],
         'pair': trade['pair'],
