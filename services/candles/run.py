@@ -15,7 +15,13 @@ def custom_ts_extractor(
     """
     Specifying a custom timestamp extractor to use the timestamp from the message payload instead of Kafka's timestamp.
     """
-    return value['timestamp_ms']
+    try:
+        return value['timestamp_ms']
+    except KeyError:
+        logger.error(
+            'Missing `timestamp_ms` in the message payload. Using Kafka timestamp.'
+        )
+        return int(timestamp * 1000)
 
 
 def init_candle(trade: Dict[str, Any]) -> Dict[str, Any]:
