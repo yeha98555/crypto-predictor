@@ -141,7 +141,7 @@ def main(
     # sdf = sdf.update(lambda value: breakpoint())
 
     # sdf = sdf.print()
-    sdf = sdf.apply(lambda x: logger.info(f'Candle: {x}'))
+    sdf = sdf.update(lambda x: logger.info(f'Candle: {x}'))
 
     # Push the candles to the output topic
     sdf.to_topic(topic=output_topic)
