@@ -25,6 +25,9 @@ def custom_ts_extractor(
 
 
 def init_candle(trade: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Initialize a candle with the first trade
+    """
     return {
         'open': trade['price'],
         'high': trade['price'],
@@ -36,15 +39,17 @@ def init_candle(trade: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def update_candle(acc: Dict[str, Any], trade: Dict[str, Any]) -> Dict[str, Any]:
-    return {
-        'close': trade['price'],
-        'high': max(acc['high'], trade['price']),
-        'low': min(acc['low'], trade['price']),
-        'volume': acc['volume'] + trade['volume'],
-        'timestamp_ms': trade['timestamp_ms'],
-        'pair': trade['pair'],
-    }
+def update_candle(candle: Dict[str, Any], trade: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Update the candle with the latest trade
+    """
+    candle['close'] = trade['price']
+    candle['high'] = max(candle['high'], trade['price'])
+    candle['low'] = min(candle['low'], trade['price'])
+    candle['volume'] = candle['volume'] + trade['volume']
+    candle['timestamp_ms'] = trade['timestamp_ms']
+    candle['pair'] = trade['pair']
+    return candle
 
 
 def main(
