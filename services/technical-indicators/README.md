@@ -1,12 +1,12 @@
-# Technical Indicators
+## Technical Indicators
 
 This service is responsible for calculating technical indicators for a given stock.
 
 
-## Tools
+### Tools
 - [TA-Lib](https://github.com/mrjbq7/ta-lib)
 
-### Installation (on Linux)
+#### Installation (on Linux)
 Download
 [ta-lib-0.4.0-src.tar.gz](https://sourceforge.net/projects/ta-lib/files/ta-lib/0.4.0/ta-lib-0.4.0-src.tar.gz/download)
 and:
