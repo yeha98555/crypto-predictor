@@ -3,6 +3,7 @@ from functools import partial
 from candle import update_candles
 from loguru import logger
 from quixstreams import Application
+from technical_indicators import compute_indicators
 
 
 def main(
@@ -59,7 +60,10 @@ def main(
         stateful=True,
     )
 
-    sdf = sdf.update(lambda value: logger.info(f'candle: {value}'))
+    # Compute the technical indicators from the candles in the state
+    sdf = sdf.apply(compute_indicators, stateful=True)
+
+    sdf = sdf.update(lambda value: logger.info(f'final message: {value}'))
     sdf = sdf.to_topic(output_topic)
 
     app.run()
