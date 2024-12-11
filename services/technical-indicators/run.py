@@ -12,6 +12,7 @@ def main(
     kafka_output_topic: str,
     kafka_consumer_group: str,
     max_candles_in_state: int,
+    candle_seconds: int,
 ):
     """
     3 steps:
@@ -25,7 +26,7 @@ def main(
         kafka_output_topic (str): The topic to send technical indicators to
         kafka_consumer_group (str): The consumer group to use
         max_candles_in_state (int): The maximum number of candles to keep in the state
-
+        candle_seconds (int): The number of seconds per candle
     Returns:
         None
     """
@@ -35,7 +36,7 @@ def main(
     logger.info(f'Kafka output topic: {kafka_output_topic}')
     logger.info(f'Kafka consumer group: {kafka_consumer_group}')
     logger.info(f'Number of candles in state: {max_candles_in_state}')
-
+    logger.info(f'Candle seconds: {candle_seconds}')
     app = Application(
         broker_address=kafka_broker_address,
         consumer_group=kafka_consumer_group,
@@ -78,4 +79,5 @@ if __name__ == '__main__':
         kafka_output_topic=config.kafka_output_topic,
         kafka_consumer_group=config.kafka_consumer_group,
         max_candles_in_state=config.max_candles_in_state,
+        candle_seconds=config.candle_seconds,
     )
