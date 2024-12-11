@@ -23,14 +23,11 @@ def update_candles(
     # Get the list of candles from our state
     candles = state.get('candles', default=[])
 
-    if not candles:
+    # Append the new candle if the list is empty or it's a new window; otherwise, replace the last candle
+    if not candles or not is_same_window(candle, candles[-1]):
         candles.append(candle)
-    # If it corresponds to the last window, we replace the last candle in the list
-    elif is_same_window(candle, candles[-1]):
-        candles[-1] = candle
-    # If the lastest candle corresponds to a new window, we just append it to the list
     else:
-        candles.append(candle)
+        candles[-1] = candle
 
     # If the total number of candles in the state is greater than the number of
     # candles we want to keep, we remove the oldest candle
