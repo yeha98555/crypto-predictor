@@ -55,6 +55,9 @@ def main(
     # Create a streaming dataframe from the input topic, so we can start transforming the data in real-time
     sdf = app.dataframe(topic=input_topic)
 
+    # Only keep candles with the same window size as the candle_seconds
+    sdf = sdf[sdf['candle_seconds'] == candle_seconds]
+
     # Update the list of candles in the state
     sdf = sdf.apply(
         partial(update_candles, max_candles_in_state=max_candles_in_state),
