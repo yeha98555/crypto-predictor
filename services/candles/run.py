@@ -142,6 +142,8 @@ def main(
         ]
     ]
 
+    sdf['candle_seconds'] = candle_seconds
+
     # For debugging
     # sdf = sdf.update(lambda value: breakpoint())
 
