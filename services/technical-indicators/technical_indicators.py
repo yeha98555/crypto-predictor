@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 import numpy as np
+from loguru import logger
 from quixstreams import State
 from talib import stream
 
@@ -34,6 +35,11 @@ def compute_indicators(candle: Dict[str, Any], state: State) -> Dict[str, Any]:
     # 2. MACD (Moving Average Convergence Divergence)
     # Standard settings: fast=12, slow=26, signal=9
     # Crypto often benefits from slightly faster settings
+    # Check if there are at least 26 candles for MACD
+    if len(candles) < 26:
+        logger.error(
+            'Not enough data to compute MACD. At least 26 periods are required.'
+        )
     indicators['macd'], indicators['macd_signal'], indicators['macd_hist'] = (
         stream.MACD(closes, fastperiod=10, slowperiod=24, signalperiod=9)
     )
