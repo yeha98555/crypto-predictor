@@ -1,6 +1,6 @@
 from loguru import logger
 from quixstreams import Application
-from quixstreams.sinks.core.csv import CSVSink
+from sinks import HopsworksFeatureStoreSink
 
 
 def main(
@@ -9,6 +9,7 @@ def main(
     kafka_input_topic: str,
     feature_group_name: str,
     feature_group_version: int,
+    output_sink: HopsworksFeatureStoreSink,
 ):
     """
     2 things:
@@ -28,17 +29,27 @@ def main(
 
     input_topic = app.topic(kafka_input_topic, value_deserializer='json')
 
-    # Push messages to Feature Store
-    csv_sink = CSVSink(path='file.csv')
-
     sdf = app.dataframe(input_topic)
-    sdf.sink(csv_sink)
+
+    # Sink data to the feature store
+    sdf.sink(output_sink)
 
     app.run()
 
 
 if __name__ == '__main__':
-    from config import config
+    from config import config, hopsworks_credentials
+
+    hopsworks_sink = HopsworksFeatureStoreSink(
+        # Hopsworks credentials
+        api_key=hopsworks_credentials.hopsworks_api_key,
+        project_name=hopsworks_credentials.hopsworks_project_name,
+        # Feature group config
+        feature_group_name=config.feature_group_name,
+        feature_group_version=config.feature_group_version,
+        feature_group_primary_keys=config.feature_group_primary_keys,
+        feature_group_event_time=config.feature_group_event_time,
+    )
 
     main(
         config.kafka_broker_address,
@@ -46,4 +57,5 @@ if __name__ == '__main__':
         config.kafka_input_topic,
         config.feature_group_name,
         config.feature_group_version,
+        output_sink=hopsworks_sink,
     )
