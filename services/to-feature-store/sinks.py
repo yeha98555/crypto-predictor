@@ -3,6 +3,13 @@ import pandas as pd
 from quixstreams.sinks.base import BatchingSink, SinkBackpressureError, SinkBatch
 
 
+class SinkError(Exception):
+    def __init__(self, error_message: str, topic: str, partition: int):
+        super().__init__(error_message)
+        self.topic = topic
+        self.partition = partition
+
+
 class HopsworksFeatureStoreSink(BatchingSink):
     def __init__(
         self,
@@ -48,6 +55,28 @@ class HopsworksFeatureStoreSink(BatchingSink):
             raise SinkBackpressureError(
                 error_message='The feature group is currently overloaded. Please try again in 30 seconds.',
                 retry_after=30.0,
+                topic=batch.topic,
+                partition=batch.partition,
+            ) from err
+        except ConnectionError as err:
+            # Handle network-related errors
+            raise SinkBackpressureError(
+                error_message='Connection to the feature store failed. Please try again in 60 seconds.',
+                retry_after=60.0,
+                topic=batch.topic,
+                partition=batch.partition,
+            ) from err
+        except ValueError as err:
+            # Handle data validation or format errors
+            raise SinkError(
+                error_message=f'Invalid data format: {str(err)}',
+                topic=batch.topic,
+                partition=batch.partition,
+            ) from err
+        except Exception as err:
+            # Handle unexpected errors
+            raise SinkError(
+                error_message=f'Unexpected error during feature group insertion: {str(err)}',
                 topic=batch.topic,
                 partition=batch.partition,
             ) from err
