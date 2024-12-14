@@ -9,7 +9,7 @@ class HopsworksFeatureStoreSink(BatchingSink):
         api_key: str,
         project_name: str,
         feature_group_name: str,
-        feature_group_version: str,
+        feature_group_version: int,
         feature_group_primary_keys: list[str],
         feature_group_event_time: str,
     ):
