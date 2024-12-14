@@ -13,3 +13,12 @@ delete-redpanda-topic-all:
 			docker compose -f redpanda.yml exec redpanda rpk topic delete $$topic; \
 		done \
 	fi
+
+build-technical-indicators-pipeline:
+	docker compose -f technical-indicators-pipeline.yml build
+
+start-technical-indicators-pipeline: build-technical-indicators-pipeline
+	docker compose -f technical-indicators-pipeline.yml up -d
+
+stop-technical-indicators-pipeline:
+	docker compose -f technical-indicators-pipeline.yml down

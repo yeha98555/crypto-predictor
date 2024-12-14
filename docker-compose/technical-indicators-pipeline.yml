@@ -1,0 +1,59 @@
+name: technical-indicators-pipeline
+networks:
+  redpanda_network:
+    external: true
+    name: redpanda-dev-cluster_redpanda_network
+
+services:
+  trades:
+    image: trades
+    build:
+      context: ../services/trades
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/trades/.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  candles:
+    image: candles
+    build:
+      context: ../services/candles
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/candles/.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  technical-indicators:
+    image: technical-indicators
+    build:
+      context: ../services/technical-indicators
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/technical-indicators/.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
+
+  to-feature-store:
+    image: to-feature-store
+    build:
+      context: ../services/to-feature-store
+      dockerfile: Dockerfile
+    networks:
+      - redpanda_network
+    env_file:
+      - ../services/to-feature-store/.env
+      - ../services/to-feature-store/credentials.env
+    environment:
+      - KAFKA_BROKER_ADDRESS=redpanda:9092
+    restart: always
